@@ -19,7 +19,7 @@ describe Task do
   end
 
   it 'lets you save tasks to the database' do
-    test_task = Task.new({"name" => 'learn sql stuff', "list_id" => 1})
+    test_task = Task.new({:name => 'learn sql stuff', :list_id => 1})
     test_task.save
     expect(Task.all).to eq [test_task]
   end

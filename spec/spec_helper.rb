@@ -1,5 +1,5 @@
 require 'pg'
-
+require 'pry'
 DB = PG.connect(:dbname => 'to_do_test')
 RSpec.configure do |config|
   config.after(:each) do

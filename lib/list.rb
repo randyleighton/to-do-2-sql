@@ -1,8 +1,8 @@
 require 'pg'
 
 class List
-
-attr_reader(:name, :id)
+  attr_accessor :name
+  attr_reader :id
 
   def initialize(attributes)
     @name = attributes[:name]
@@ -19,7 +19,7 @@ attr_reader(:name, :id)
     lists = []
     results = DB.exec("SELECT * FROM lists;")
     results.each do |result|
-      lists << List.new(result)
+      lists << List.new({:name => result['name'], :id => result['id']})
     end
     lists
   end

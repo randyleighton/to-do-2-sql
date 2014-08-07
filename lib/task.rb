@@ -1,6 +1,5 @@
 require 'pg'
 
-
 class Task
 
 attr_reader(:name, :list_id)
@@ -14,7 +13,7 @@ attr_reader(:name, :list_id)
     tasks = []
     results = DB.exec("SELECT * FROM tasks;")
     results.each do |result|
-    tasks << Task.new(result)
+      tasks << Task.new({:name => result['name'], :list_id =>result['list_id']})
     end
     tasks
   end
