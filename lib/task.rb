@@ -13,9 +13,13 @@ attr_reader(:name, :list_id)
     tasks = []
     results = DB.exec("SELECT * FROM tasks;")
     results.each do |result|
-      tasks << Task.new({:name => result['name'], :list_id =>result['list_id']})
+    tasks << Task.new({:name => result['name'], :list_id =>result['list_id']})
     end
     tasks
+  end
+
+  def delete
+
   end
 
   def save
