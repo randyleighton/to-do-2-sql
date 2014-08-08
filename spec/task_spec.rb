@@ -29,6 +29,7 @@ describe Task do
     task2 = Task.new({:name => 'learn sql stuff', :list_id => 1})
     expect(task1).to eq task2
   end
+
   it 'deletes tasks from the database' do
     task1 = Task.new({:name => 'learn nachos', :list_id => 1})
     task2 = Task.new({:name => 'learn nothing', :list_id => 1})
@@ -37,4 +38,13 @@ describe Task do
     task1.delete
     expect(Task.all).to eq [task2]
   end
+
+  it 'finds an object in the class array' do
+    task2 = Task.new({:name => 'learn code', :list_id => 1})
+    task2.save
+    task1 = Task.new({:name => 'learn nachos', :list_id => 1})
+    task1.save
+    expect(Task.find('learn nachos')).to eq task1
+  end
+
 end

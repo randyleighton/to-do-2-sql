@@ -15,6 +15,11 @@ class List
     @id
   end
 
+  def self.find(search_id)
+    results = DB.exec("SELECT * FROM lists WHERE id = #{search_id};")[0]
+    List.new({:name => results['name'], :id => results['id']})
+  end
+
   def self.all
     lists = []
     results = DB.exec("SELECT * FROM lists;")
@@ -24,7 +29,19 @@ class List
     lists
   end
 
+  def tasks
+    tasks = []
+    results = DB.exec("SELECT * FROM tasks WHERE list_id = #{self.id};")
+    results.each do |result|
+      name = result['name']
+      list_id = result['list_id'].to_i
+      tasks << Task.new({:name => name, :list_id => list_id})
+    end
+    tasks
+  end
+
   def ==(another_list)
     self.name == another_list.name && self.id.to_i == another_list.id.to_i
   end
+
 end
