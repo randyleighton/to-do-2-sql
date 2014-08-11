@@ -35,9 +35,20 @@ class List
     results.each do |result|
       name = result['name']
       list_id = result['list_id'].to_i
-      tasks << Task.new({:name => name, :list_id => list_id})
+      if result['complete'] == 'y'
+        @completed_result = true
+      else
+        @completed_result = false
+      end
+      due_date = result['due_date']
+      tasks << Task.new({:name => name, :list_id => list_id,
+                        :done =>@completed_result, :due_date => due_date})
     end
     tasks
+  end
+
+  def delete
+    DB.exec("DELETE FROM lists WHERE id = '#{self.id}';")
   end
 
   def ==(another_list)

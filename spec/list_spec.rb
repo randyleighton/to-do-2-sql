@@ -2,6 +2,7 @@ require 'rspec'
 require 'pg'
 require 'spec_helper'
 require 'list'
+require 'pry'
 
 describe List do
   it 'will initialize with a name and id' do
@@ -29,13 +30,21 @@ describe List do
   it 'returns all the tasks in a given list' do
     list1 = List.new({:name => 'home'})
     list1.save
-    task1 = Task.new({:name => 'learn nachos', :list_id => list1.id})
-    task2 = Task.new({:name => 'learn nothing', :list_id => list1.id})
+    task1 = Task.new({:name => 'learn nachos', :list_id => list1.id, :due_date => "2014-09-01"})
+    task2 = Task.new({:name => 'learn nothing', :list_id => list1.id, :due_date => "2014-09-02"})
     task1.save
     task2.save
     expect(list1.tasks).to eq [task1,task2]
   end
 
+  it 'deletes a list' do
+    list1 = List.new({:name => 'home'})
+    list1.save
+    list2 = List.new({:name => 'work'})
+    list2.save
+    list1.delete
+    expect(List.all).to eq [list2]
+  end
 
   describe '.all' do
     it 'allows you to save multiple lists' do

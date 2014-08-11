@@ -11,6 +11,7 @@ def main_menu
     puts "[== To Do List Main Menu ==]".blue
     puts "[z] clear the List Table"
     puts "[c] Create a new List"
+    puts "[d] Delete a List"
     puts "[v] View Lists"
     puts ""
     puts "[t] GO to [== TASKS Menu ==]".blue
@@ -18,6 +19,8 @@ def main_menu
     menu_choice = gets.chomp
     if menu_choice == 'c'
       create_list
+    elsif menu_choice == 'd'
+      delete_list
     elsif menu_choice == 'v'
       view_lists
     elsif menu_choice == 'z'
@@ -40,6 +43,19 @@ def create_list
   puts "\n#{List.all.last.name} has been created.\n\n"
 end
 
+def delete_list
+  view_lists
+  puts "\n\nChoose the list [#] to delete:"
+  list_choice = gets.chomp.to_i
+  list_result = List.find(list_choice)
+  list_result.delete
+  task_result = Task.find_id(list_choice)
+  task_result.each do |task|
+    task.delete_from_list
+  end
+  view_lists
+end
+
 def view_lists
   system("clear")
   puts "Your current Task Lists: ".green
@@ -58,23 +74,23 @@ def task_menu
     puts "[z] clear the task table"
     puts "[a] Add Tasks"
     puts "[d] Delete a Task"
-    puts "[l] List Tasks"
-    # puts "[s] Set a Task Due Date"
-    # puts "[m] Mark a task Complete"
+    puts "[v] View Tasks"
+    puts "[m] Mark a task Complete"
+    puts "[e] edit a task description"
     puts "[x] Exit to Main Menu".red
     menu_choice = gets.chomp
     if menu_choice == 'a'
       add_task
-    elsif menu_choice == 'l'
-      list_tasks
+    elsif menu_choice == 'v'
+      view_tasks
     elsif menu_choice == 'd'
       delete_task
     elsif menu_choice == 'z'
-       clear_task_table
-    # elsif menu_choice == 's'
-
-    # elsif menu_choice == 'm'
-
+      clear_task_table
+    elsif menu_choice == 'm'
+      mark_complete
+    elsif menu_choice == 'e'
+      edit_task
     elsif menu_choice == 'x'
       main_menu
     else
@@ -89,26 +105,68 @@ def add_task
   list_choice = gets.chomp.to_i
   puts "\n\nEnter Task description: "
   task_choice = gets.chomp
-  Task.new({:name => task_choice, :list_id => list_choice.to_i}).save
+  puts "Enter a due date yyyy-mm-dd or hit enter for none"
+  date_choice = gets.chomp
+  Task.new({:name => task_choice, :list_id => list_choice.to_i,
+            :done => false, :due_date => date_choice}).save
   puts "\n#{Task.all.last.name} has been entered.\n\n"
  end
+
+def view_tasks
+puts "[== View Options==]"
+puts "[1] View Tasks - default order"
+puts "[2] Sort by Due Date"
+puts "[x] exit to [== Task Menu==]"
+menu_choice = gets.chomp
+if menu_choice =='1'
+    list_tasks
+  elsif menu_choice == '2'
+    sort_date
+  elsif menu_choice == '3'
+    sort_date_reversed
+  elsif menu_choice == 'x'
+    task_menu
+  end
+end
 
 def list_tasks
   system("clear")
   puts "Tasks with " + "List number".green
-  puts "------------------------"
-  puts "List# - Task Description"
+  puts "List# - Task Description - Complete - Due Date"
+  puts "----------------------------------------------"
   Task.all.each do |task|
-    if task.name == "Eat Nachos"
-      puts "[#{task.list_id}]  #{task.name}".bg_cyan
-    elsif task.name == "Dance"
-      puts "[#{task.list_id}]  #{task.name}".bg_magenta
-    else
-      puts "[#{task.list_id}]  #{task.name}"
-    end
+    puts "[#{task.list_id}] - " + "#{task.name} - " +
+            "#{task.done} - " + "#{task.due_date}".green
   end
   puts "\n\n"
 end
+
+
+
+def sort_date
+  system("clear")
+  puts "Sort by:"
+  puts "[1] Earliest due date"
+  puts "[2] Latest due date"
+  menu_choice = gets.chomp
+  puts "Tasks with " + "List number".green
+  puts "List# - Task Description - Complete - Due Date"
+  puts "----------------------------------------------"
+  @task_result = Task.sort
+  if menu_choice == '2'
+    @task_result.reverse!
+  end
+  @task_result.each do |task|
+    puts "[#{task.list_id}] - " + "#{task.name} - " +
+            "#{task.done} - " + "#{task.due_date}".green
+  end
+  puts "\n\n"
+end
+
+
+
+
+
 
 def delete_task
   view_lists
@@ -118,15 +176,30 @@ def delete_task
   puts "List#".green + "Task Description"
   puts "---------------------------"
   found_list = List.find(list_choice)
-  Task.all.each do |task|
-    if list_choice == found_list.id.to_i
-      puts "#{task.name}"
-    end
+  found_list.tasks.each do |tasks|
+    puts "[#{tasks.list_id}] #{tasks.name}"
   end
   puts "\n\nType name of task to delete "
   task_name = gets.chomp
   task_to_delete = Task.find(task_name)
   task_to_delete.delete
+end
+
+def mark_complete
+  view_lists
+  puts "\n\nChoose the list [#] to mark a task complete:"
+  list_choice = gets.chomp.to_i
+  puts "\n\nTasks for list #{list_choice}\n"
+  puts "List#".green + "Complete  Task Description"
+  puts "---  --------  ----------------"
+  found_list = List.find(list_choice)
+  found_list.tasks.each do |tasks|
+    puts "[#{tasks.list_id}] #{tasks.done} #{tasks.name} #{tasks.due_date}"
+  end
+  puts "\n\nType name of task to complete"
+  task_name = gets.chomp
+  task_to_complete = Task.find(task_name)
+  task_to_complete.mark_complete
 end
 
 def clear_task_table
