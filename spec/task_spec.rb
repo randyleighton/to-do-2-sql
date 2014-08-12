@@ -87,6 +87,15 @@ describe Task do
     expect(Task.sort).to eq [task1, task3, task2]
   end
 
+  it 'lets you edit the description of the task' do
+    list1 = List.new({:name => 'work'})
+    list1.save
+    task1 = Task.new({:name => 'learn nachos', :list_id => list1.id.to_i, :due_date => "2014-09-01"})
+    task1.save
+    task1.update_task_name("learn to eat nachos")
+    expect(task1.name).to eq 'learn to eat nachos'
+    expect(Task.all.first.name).to eq 'learn to eat nachos'
+  end
 
 
 

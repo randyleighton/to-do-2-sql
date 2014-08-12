@@ -3,7 +3,7 @@ require 'pry'
 
 class Task
 
-attr_reader(:name, :list_id, :done, :due_date)
+  attr_reader(:name, :list_id, :done, :due_date)
 
   def initialize (attributes)
     @name = attributes[:name]
@@ -73,12 +73,15 @@ attr_reader(:name, :list_id, :done, :due_date)
       else
         @completed_result = false
       end
-
-    # # completed_result = result['complete'] == 'y' ? true : false
     tasks << Task.new({:name => result['name'], :list_id =>result['list_id'],
                         :done => @completed_result, :due_date =>result['due_date']})
     end
     tasks
+  end
+
+  def update_task_name(new_name)
+    DB.exec("UPDATE tasks SET name ='#{new_name}' WHERE name = '#{self.name}';")
+    @name = new_name
   end
 
   def delete

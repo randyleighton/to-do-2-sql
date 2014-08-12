@@ -141,7 +141,16 @@ def list_tasks
   puts "\n\n"
 end
 
+def edit_task
+  list_tasks
+  puts "\n\nType name of task to edit "
+  task_name = gets.chomp
+  new_task = Task.find(task_name)
+  puts "What would you like to change your task to?"
+  new_task_name = gets.chomp
+  new_task.update_task_name(new_task_name)
 
+end
 
 def sort_date
   system("clear")
